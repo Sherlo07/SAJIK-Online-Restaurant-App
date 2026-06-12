@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="OnlineRestaurantApp.Components/OnlineRestaurantApp.Components.csproj" Id="068b5b84-b20b-46b9-ad11-9ecd6c6670f1" />
+  <Project Path="OnlineRestaurantApp.Dal/OnlineRestaurantApp.Dal.csproj" Id="220226f4-4956-4636-a149-e827a58e69a3" />
+  <Project Path="OnlineRestaurantApp/OnlineRestaurantApp.csproj" />
+</Solution>
