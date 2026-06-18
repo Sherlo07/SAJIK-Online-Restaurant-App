@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+
 using OnlineRestaurantApp.Dal;
 using OnlineRestaurantApp.Filters;
 using OnlineRestaurantApp.IRepository;
@@ -18,7 +19,7 @@ namespace OnlineRestaurantApp
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddDbContext<OnlineRestaurantDbContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("cs"));
+                options.UseNpgsql(builder.Configuration.GetConnectionString("cs"));
             });
             builder.Services.AddSession();
             builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
