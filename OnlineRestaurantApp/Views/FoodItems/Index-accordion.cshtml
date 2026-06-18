@@ -1,0 +1,513 @@
+﻿@using OnlineRestaurantApp.Utility
+@model PaginatedList<FoodItem>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+    <form asp-action="Index" method="get">
+        <div class="form-actions no-color">
+            <p>
+                <label>Find by name: <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" /></label>
+                <input type="submit" value="Search" class="btn btn-default" /> |
+                <a asp-action="Index">Back to Full List</a>
+            </p>
+        </div>
+
+
+        <div class="col-md-3">
+            <label>Filter by Category:</label>
+            <select name="categoryId" asp-items="ViewBag.CategoryList" class="form-control">
+                <option value="">-- All Categories --</option>
+            </select>
+        </div>
+
+        <div class="col-md-3 mt-4">
+            <button type="submit" class="btn btn-primary">Apply Filters</button>
+            <a asp-action="Index" class="btn btn-secondary">Reset</a>
+        </div>
+       
+
+    </form>
+</p>
+
+
+
+
+
+@{
+    int x = 1;
+    @foreach (FoodItem i in Model)
+    {
+        
+        <div class="accordion" id="accordionExample@x">
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseOne"
+                            aria-expanded="true"
+                            aria-controls="collapseOne">
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSort"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">ItemName</a>
+                    </button>
+                </h2>
+                <div id="collapseOne"
+                     class="accordion-collapse collapse show"
+                     data-bs-parent="#accordionExample@x">
+                    <div class="accordion-body">
+
+                        <div class="accordion" id="accordionExample">
+                            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseOne"
+                            aria-expanded="true"
+                            aria-controls="collapseOne">
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSort"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">ItemName</a>
+                    </button>
+                </h2>
+                <div id="collapseOne"
+                     class="accordion-collapse collapse show"
+                     data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <strong>@i.ItemName</strong>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapse17"
+                            aria-expanded="false"
+                            aria-controls="collapse17">
+                        Category Name
+                    </button>
+                </h2>
+                <div id="collapse17"
+                     class="accordion-collapse collapse"
+                     data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        @i.Category.CategoryName
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapse19"
+                            aria-expanded="false"
+                            aria-controls="collapse19">
+                        Description
+                    </button>
+                </h2>
+                <div id="collapse19"
+                     class="accordion-collapse collapse"
+                     data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        @i.ItemDescription
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" 
+                            type="button" 
+                            data-bs-toggle="collapse" 
+                            data-bs-target="#collapseTwo" 
+                            aria-expanded="false" 
+                            aria-controls="collapseTwo">
+                        Image
+                    </button>
+                </h2>
+                <div id="collapseTwo" 
+                     class="accordion-collapse collapse" 
+                     data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <img src="@i.ItemImagePath" alt="@i.ItemName" width="150" height="100" />
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseThree"
+                            aria-expanded="false"
+                            aria-controls="collapseThree">
+                        Actual Price
+                    </button>
+                </h2>
+                <div id="collapseThree"
+                     class="accordion-collapse collapse"
+                     data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        @i.ActualPrice
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseFour"
+                            aria-expanded="false"
+                            aria-controls="collapseFour">
+                        Rating
+                    </button>
+                </h2>
+                <div id="collapseFour"
+                     class="accordion-collapse collapse"
+                     data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        @i.Rating
+                    </div>
+                </div>
+            </div>
+             <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseFive"
+                            aria-expanded="false"
+                            aria-controls="collapseFive">
+                        RatingBy
+                    </button>
+                </h2>
+                <div id="collapseFive"
+                     class="accordion-collapse collapse"
+                     data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        @i.RatingBy
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseSix"
+                            aria-expanded="false"
+                            aria-controls="collapseSix">
+                        Is Available
+                    </button>
+                </h2>
+                <div id="collapseSix"
+                     class="accordion-collapse collapse"
+                     data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        @i.IsAvailable
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseSeven"
+                            aria-expanded="false"
+                            aria-controls="collapseSeven">
+                        Is BestSeller
+                    </button>
+                </h2>
+                <div id="collapseSeven"
+                     class="accordion-collapse collapse"
+                     data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        @i.IsBestSeller
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseEight"
+                            aria-expanded="false"
+                            aria-controls="collapseEight">
+                        Is Available
+                    </button>
+                </h2>
+                <div id="collapseEight"
+                     class="accordion-collapse collapse"
+                     data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        @i.IsAvailable
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseNine"
+                            aria-expanded="false"
+                            aria-controls="collapseNine">
+                        Is FastMoving
+                    </button>
+                </h2>
+                <div id="collapseNine"
+                     class="accordion-collapse collapse"
+                     data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        @i.IsFastMoving
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseTen"
+                            aria-expanded="false"
+                            aria-controls="collapseTen">
+                        Is BreakFast
+                    </button>
+                </h2>
+                <div id="collapseTen"
+                     class="accordion-collapse collapse"
+                     data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        @i.IsBreakFast
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapse11"
+                            aria-expanded="false"
+                            aria-controls="collapse11">
+                        Is Lunch Item
+                    </button>
+                </h2>
+                <div id="collapse11"
+                     class="accordion-collapse collapse"
+                     data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        @i.IsLunch
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapse12"
+                            aria-expanded="false"
+                            aria-controls="collapse12">
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["DiscountSort"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Discount</a>
+                    </button>
+                </h2>
+                <div id="collapse12"
+                     class="accordion-collapse collapse"
+                     data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        @i.DiscountPer
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapse13"
+                            aria-expanded="false"
+                            aria-controls="collapse13">
+                        Is Snack Item
+                    </button>
+                </h2>
+                <div id="collapse13"
+                     class="accordion-collapse collapse"
+                     data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        @i.IsSnack
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapse14"
+                            aria-expanded="false"
+                            aria-controls="collapse14">
+                        SellingPrice
+                    </button>
+                </h2>
+                <div id="collapse14"
+                     class="accordion-collapse collapse"
+                     data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        @i.SellingPrice
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapse15"
+                            aria-expanded="false"
+                            aria-controls="collapse15">
+                        Is Dinner Item
+                    </button>
+                </h2>
+                <div id="collapse15"
+                     class="accordion-collapse collapse"
+                     data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        @i.IsDinner
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapse16"
+                            aria-expanded="false"
+                            aria-controls="collapse16">
+                        ItemType Name
+                    </button>
+                </h2>
+                <div id="collapse16"
+                     class="accordion-collapse collapse"
+                     data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        @i.ItemType.ItemTypeName
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapse18"
+                            aria-expanded="false"
+                            aria-controls="collapse18">
+                        Selling Price
+                    </button>
+                </h2>
+                <div id="collapse18"
+                     class="accordion-collapse collapse"
+                     data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        @i.SellingPrice
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapse19"
+                            aria-expanded="false"
+                            aria-controls="collapse19">
+                        Operations
+                    </button>
+                </h2>
+                <div id="collapse19"
+                     class="accordion-collapse collapse"
+                     data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <a asp-action="Edit" asp-route-id="@i.ItemId">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@i.ItemId">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@i.ItemId">Delete</a>
+                    </div>
+                </div>  
+            </div>
+                        </div>
+                   
+                        
+                        
+                        </div>
+                </div>
+            </div>
+
+
+
+            
+
+        </div>
+        x = x + 1;
+    }
+}
+
+
+
+
+
+
+
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @prevDisabled">
+    Previous
+</a>
+<span> @Model.PageIndex / @Model.TotalPages   </span>
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">
+    Next
+</a>

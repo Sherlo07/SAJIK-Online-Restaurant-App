@@ -1,0 +1,95 @@
+﻿@model OnlineRestaurantApp.Components.UserLogin
+
+@{
+
+    ViewData["Title"] = "Login";
+
+    Layout = "~/Views/Shared/_LoginLayout.cshtml";
+
+}
+@if (TempData["SuccessMessage"] is string msg)
+{
+    <div class="alert alert-success py-2">@msg</div>
+}
+<div class="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
+
+                <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                    <div class="card-header bg-primary bg-gradient text-white text-center py-4">
+                        <div class="mb-2">
+                            <i class="bi bi-restaurant fs-1"></i>
+                        </div>
+                        <h4 class="fw-semibold mb-0">Welcome Back</h4>
+                        <p class="small opacity-75 mb-0">Sign in to continue</p>
+                    </div>
+
+                    <div class="card-body p-4">
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2" role="alert"></div>
+
+                        <!-- ✅ FIX: Proper form tag helper start -->
+                        <form asp-action="ValidateUser" method="post">
+
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+
+                            <div class="mb-3">
+                                <label asp-for="Email" class="form-label fw-semibold">Email</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="bi bi-envelope"></i>
+                                    </span>
+                                    <input asp-for="Email" class="form-control" placeholder="you@example.com" />
+                                </div>
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="input-group">
+                                    <label asp-for="Password" class="form-label fw-semibold mb-1">Password</label>
+                                </div>
+
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="bi bi-lock"></i>
+                                    </span>
+                                    <input asp-for="Password" type="password" class="form-control" />
+                                </div>
+                                <span asp-validation-for="Password" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3 form-check">
+                                <input class="form-check-input" type="checkbox" id="RememberMe" name="RememberMe" />
+                                <label class="form-check-label" for="RememberMe">Remember me</label>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg rounded-3">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                                </button>
+                            </div>
+
+                            <div class="text-center mt-3">
+                                <span class="text-muted small">New user?</span>
+                                <!-- ✅ FIX: Correct register link -->
+                                <a asp-action="Register" class="ms-1 text-decoration-none">Create an account</a>
+                                
+                            </div>
+                            <a asp-action="ForgotPassword" class="small text-decoration-none">Forgot password?</a>
+
+                        </form>
+                        <!-- ✅ form ends correctly -->
+                    </div>
+                </div>
+
+                <p class="text-center text-muted small mt-3">
+
+                    © @DateTime.UtcNow.Year Online Restaurant
+                </p>
+
+            </div>
+        </div>
+    </div>
+</div>

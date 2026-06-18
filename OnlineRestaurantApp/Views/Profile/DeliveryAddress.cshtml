@@ -1,0 +1,79 @@
+﻿@model OnlineRestaurantApp.Components.DeliveryAddress
+
+@{
+
+    ViewData["Title"] = "Delivery Address";
+    Layout = "~/Views/Shared/_ProfileLayout.cshtml";
+}
+
+<div class="container py-4">
+    <h3 class="mb-3">Delivery Address</h3>
+
+    @if (TempData["Err"] is string err && !string.IsNullOrWhiteSpace(err))
+
+    {
+        <div class="alert alert-danger">@err</div>
+
+    }
+
+    @if (TempData["Ok"] is string ok && !string.IsNullOrWhiteSpace(ok))
+
+    {
+        <div class="alert alert-success">@ok</div>
+
+    }
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form method="post" action="/profile/address">
+
+                @Html.AntiForgeryToken()
+
+                <div class="mb-2">
+                    <label class="form-label fw-semibold">Address Line 1</label>
+                    <input type="text" class="form-control" name="addressLine1"
+                           value="@Model.AddressLine1" required />
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label fw-semibold">Address Line 2 (optional)</label>
+                    <input type="text" class="form-control" name="addressLine2"
+                           value="@Model.AddressLine2" />
+                </div>
+
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">City</label>
+                        <input type="text" class="form-control" name="city"
+                               value="@Model.City" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">State</label>
+                        <input type="text" class="form-control" name="state"
+                               value="@Model.State" required />
+                    </div>
+                </div>
+
+                <div class="row g-2 mt-1">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Pincode</label>
+                        <input type="text" class="form-control" name="pincode"
+                               value="@Model.Pincode" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Landmark (optional)</label>
+                        <input type="text" class="form-control" name="landmark"
+                               value="@Model.Landmark" />
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">
+
+                        Save Address
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

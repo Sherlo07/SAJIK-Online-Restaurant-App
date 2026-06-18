@@ -1,0 +1,9 @@
+C:\myapps\OnlineRestaurantApp\OnlineRestaurantApp\obj\Debug\net8.0\OnlineRestaurantApp.csproj.AssemblyReference.cache
+C:\myapps\OnlineRestaurantApp\OnlineRestaurantApp\obj\Debug\net8.0\rpswa.dswa.cache.json
+C:\myapps\OnlineRestaurantApp\OnlineRestaurantApp\obj\Debug\net8.0\OnlineRestaurantApp.GeneratedMSBuildEditorConfig.editorconfig
+C:\myapps\OnlineRestaurantApp\OnlineRestaurantApp\obj\Debug\net8.0\OnlineRestaurantApp.AssemblyInfoInputs.cache
+C:\myapps\OnlineRestaurantApp\OnlineRestaurantApp\obj\Debug\net8.0\OnlineRestaurantApp.AssemblyInfo.cs
+C:\myapps\OnlineRestaurantApp\OnlineRestaurantApp\obj\Debug\net8.0\OnlineRestaurantApp.csproj.CoreCompileInputs.cache
+C:\myapps\OnlineRestaurantApp\OnlineRestaurantApp\obj\Debug\net8.0\OnlineRestaurantApp.MvcApplicationPartsAssemblyInfo.cache
+C:\myapps\OnlineRestaurantApp\OnlineRestaurantApp\obj\Debug\net8.0\OnlineRestaurantApp.RazorAssemblyInfo.cache
+C:\myapps\OnlineRestaurantApp\OnlineRestaurantApp\obj\Debug\net8.0\OnlineRestaurantApp.RazorAssemblyInfo.cs

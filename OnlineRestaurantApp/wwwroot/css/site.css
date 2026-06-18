@@ -1,0 +1,100 @@
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+
+    html {
+        font-size: 16px;
+    }
+}
+/* Feedback button (solid brand color) */
+.feedback-btn {
+    color: #fff !important;
+    background-color: cornflowerblue; /* <-- change this to your brand color */
+    border-color: cornflowerblue;
+    border-radius: 9999px; /* pill shape */
+    font-weight: 600;
+}
+
+    
+
+    .feedback-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 6px rgba(0,0,0,.2) inset;
+    }
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+#site.css add
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+    color: var(--bs-secondary-color);
+    text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+    text-align: start;
+}
+
+/* Container for the welcome text */
+
+.hero-section {
+    padding: 60px 0;
+    max-width: 800px; /* Limits width so text doesn't span the whole screen */
+}
+
+/* Styling the Main Title */
+
+.main-title {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+    /* Optional: use a Google Font for more character */
+}
+
+/* Styling the Description */
+
+.restaurant-description {
+    color: #5a6268;
+    line-height: 1.8;
+    font-size: 1.2rem;
+    font-style: italic; /* Style variation */
+
+    border-left: 4px solid #ff4d4d; /* Accent color bar on the left */
+
+    padding-left: 20px;
+}
+
+/* Ensure the image doesn't look too cramped */
+
+.hero-img-small {
+    max-width: 50%; /* Reduces size within its column */
+
+    height: auto;
+    border: 2px solid #f8f9fa; /* Adds a clean border */
+}
+
+
+/* Adjusting the description styling from before */
+
+.restaurant-description {
+    color: #5a6268;
+    line-height: 1.8;
+    font-size: 1.2rem;
+    font-style: italic;
+    border-left: 5px solid #ff4d4d; /* Red accent bar */
+
+    padding-left: 20px;
+    margin-top: 15px;
+}

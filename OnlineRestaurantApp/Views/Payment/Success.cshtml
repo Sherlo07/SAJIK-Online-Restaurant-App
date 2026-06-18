@@ -1,0 +1,48 @@
+﻿@{
+    Layout = "~/Views/Shared/_PaymentLayout.cshtml";
+    ViewData["Title"] = "Payment Status";
+
+    bool paid = ViewBag.Paid is bool p && p;
+    int orderId = ViewBag.OrderId is int oid ? oid : 0;
+    decimal amount = ViewBag.Amount is decimal a ? a : 0m;
+}
+
+<div class="container py-4">
+    <div class="d-flex align-items-center mb-3">
+        <h4 class="m-0">
+            Payment Status for Order <span class="text-primary">#@orderId</span>
+        </h4>
+        <div class="ms-auto text-muted">
+            Amount: <strong>₹ @amount.ToString("0.00")</strong>
+        </div>
+    </div>
+
+    @if (paid)
+    {
+        <div class="alert alert-success" role="alert">
+            <h5 class="mb-1">✅ Payment Successful</h5>
+            <div>Your payment has been received. You can view order details and delivery status on the next page.</div>
+        </div>
+
+        <div class="d-flex gap-2 mt-3">
+            <a class="btn btn-primary" href="/payment/success/@orderId">View Order Details</a>
+            <a class="btn btn-outline-secondary" href="/FoodItems/Browse">Continue Shopping</a>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning" role="alert">
+            <h5 class="mb-1">⚠️ Payment Pending</h5>
+            <div>Your payment has not been completed. Please complete the payment to place your order.</div>
+        </div>
+
+        <div class="d-flex gap-2 mt-3">
+            <a class="btn btn-success" href="/payment/start?orderId=@orderId">Complete Payment</a>
+            <a class="btn btn-outline-secondary" href="/FoodItems/Browse">Back to Browse</a>
+        </div>
+
+        <div class="text-muted small mt-3">
+            Tip: If you think this is a mistake, try again or contact support.
+        </div>
+    }
+</div>

@@ -1,0 +1,173 @@
+﻿@using OnlineRestaurantApp.Utility
+@model PaginatedList<FoodItem>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+    <form asp-action="Index" method="get">
+        <div class="form-actions no-color">
+            <p>
+                <label>Find by name: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" /></label>
+                <input type="submit" value="Search" class="btn btn-default" /> |
+                <a asp-action="Index">Back to Full List</a>
+            </p>
+        </div>
+    </form>
+</p>
+
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSort"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">ItemName</a>
+            </th>
+            <th>
+                Actual Price
+            </th>
+            <th>
+               rating
+            </th>
+            <th>
+                Rating by
+            </th>
+            <th>
+                Item Image
+            </th>
+            <th>
+                Item description
+            </th>
+            <th>
+                IsAvailable
+            </th>
+            <th>
+                IsBestSeller
+            </th>
+            <th>
+                IsBreakFast
+            </th>
+            <th>
+                IsLunch
+            </th>
+            <th>
+                IsSnack
+            </th>
+            <th>
+                IsDinner
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["DiscountSort"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Discount</a>
+            </th>
+            <th>
+                Selling Price
+            </th>
+            <th>
+                IsFastMoving
+            </th>
+            
+            <th>
+                Category
+            </th>
+            <th>
+                ItemType
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ItemName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ActualPrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Rating)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RatingBy)
+            </td>
+            <td>
+               <img src="@item.ItemImagePath" width="150" height="100"/>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ItemDescription)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsAvailable)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsBestSeller)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsBreakFast)
+            </td>
+              <td>
+                    @Html.DisplayFor(modelItem => item.IsLunch)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsSnack)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsDinner)
+                </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DiscountPer)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SellingPrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsFastMoving)
+            </td>
+            
+            <td>
+                @Html.DisplayFor(modelItem => item.Category.CategoryName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ItemType.ItemTypeName)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ItemId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.ItemId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.ItemId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+
+
+
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @prevDisabled">
+    Previous
+</a>
+<span> @Model.PageIndex / @Model.TotalPages   </span>
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">
+    Next
+</a>

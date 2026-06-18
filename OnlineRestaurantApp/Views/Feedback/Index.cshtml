@@ -1,0 +1,184 @@
+﻿@model IEnumerable<OnlineRestaurantApp.Components.Feedback>
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Feedback Management";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var createdOptions = ViewBag.CreatedOptions as List<SelectListItem> ?? new();
+
+    string createdRange = Convert.ToString(ViewBag.CreatedRange) ?? "";
+    string email = Convert.ToString(ViewBag.Email) ?? "";
+    int pageIndex = ViewBag.PageIndex is int pi ? pi : 1;
+    int pageSize = ViewBag.PageSize is int ps ? ps : 10;
+    int totalCount = ViewBag.TotalCount is int tc ? tc : (Model?.Count() ?? 0);
+    int totalPages = ViewBag.TotalPages is int tp ? tp : 1;
+    bool hasPrev = ViewBag.HasPreviousPage is bool hp && hp;
+    bool hasNext = ViewBag.HasNextPage is bool hn && hn;
+}
+@functions {
+    public static string StatusBadgeClass(FbStatus status)
+        => status switch
+        {
+            FbStatus.Closed => "badge bg-success",
+            FbStatus.UnderProcessing => "badge bg-warning text-dark",
+            FbStatus.Open => "badge bg-primary",
+            _ => "badge bg-secondary"
+        };
+
+    public static string StatusLabel(FbStatus status)
+        => status switch
+        {
+            FbStatus.UnderProcessing => "Under Processing",
+            _ => status.ToString() // "Open", "Closed"
+        };
+}
+<h2 class="mb-3">Feedback Management (@totalCount)</h2>
+
+<form asp-action="Index" method="get" class="card shadow-sm mb-3">
+    <div class="card-body">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">Created On</label>
+                <select name="createdRange" class="form-select" asp-items="createdOptions"></select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Email</label>
+                <input type="text"
+                       name="email"
+                       value="@email"
+                       class="form-control"
+                       placeholder="Search by email..." />
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label">Page Size</label>
+                <select name="pageSize" class="form-select">
+                    @{
+                        var sizes = new[] { 10, 20, 50, 100 };
+                        foreach (var s in sizes)
+                        {
+                            <option value="@s" selected="@(s == pageSize)">@s / page</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-search me-1"></i> Apply
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary w-100">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-striped table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th style="width: 16%;">Name</th>
+                    <th style="width: 16%;">Subject</th>
+                    <th style="width: 28%;">Description</th>
+                    <th class="text-center" style="width: 110px;">Image</th>
+                    <th style="width: 16%;">Email</th>
+                    <th style="width: 12%;">Mobile</th>
+                    <th style="width: 10%;">Status</th>
+                    <th style="width: 14%;">Admin Remarks</th>
+                    <th style="width: 14%;">Created On</th>
+                    <th class="text-center" style="width: 200px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model == null || !Model.Any())
+                {
+                    <tr>
+                        <td colspan="10" class="text-center text-muted py-4">
+                            No feedbacks found.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in Model)
+                    {
+                        var thumb = string.IsNullOrWhiteSpace(item.FeedbackImagePath)
+                        ? "/images/feedbacks.jng"
+                        : Url.Content(item.FeedbackImagePath);
+
+                        <tr>
+                            <td>@item.Name</td>
+                            <td>@item.Subject</td>
+
+                            <td class="text-truncate" style="max-width: 380px;" title="@item.Description">
+                                @item.Description
+                            </td>
+
+                            <td class="text-center">
+                                @* Use <img> for thumbnail *@
+                                <img src="@thumb" alt="img" class="img-thumbnail" style="width:80px;height:80px;object-fit:cover;" />
+                            </td>
+
+                            <td>@(string.IsNullOrWhiteSpace(item.Email) ? "-" : item.Email)</td>
+                            <td>@(string.IsNullOrWhiteSpace(item.Mobile) ? "-" : item.Mobile)</td>
+
+                            <td>
+                                <span class="@StatusBadgeClass(item.Status)">@StatusLabel(item.Status)</span>
+                            </td>
+
+                            <td class="text-truncate" style="max-width: 240px;" title="@item.RemarksByAdmin">
+                                @(string.IsNullOrWhiteSpace(item.RemarksByAdmin) ? "-" : item.RemarksByAdmin)
+                            </td>
+
+                            <td>@item.CreatedOn.ToString("dd-MMM-yyyy HH:mm")</td>
+
+                            <td class="text-center">
+                                <a asp-action="Edit" asp-route-id="@item.FeedbackId" class="btn btn-sm btn-outline-warning me-1">
+                                    <i class="bi bi-pencil-square me-1"></i>Edit
+                                </a>
+                                <a asp-action="Details" asp-route-id="@item.FeedbackId" class="btn btn-sm btn-outline-info me-1">
+                                    <i class="bi bi-info-circle me-1"></i>Details
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.FeedbackId" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash me-1"></i>Delete
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@{
+    var prevDisabled = !hasPrev ? "disabled" : "";
+    var nextDisabled = !hasNext ? "disabled" : "";
+}
+
+<div class="d-flex align-items-center justify-content-center gap-3 mt-3">
+    <a asp-action="Index"
+       asp-route-createdRange="@createdRange"
+       asp-route-email="@email"
+       asp-route-pageSize="@pageSize"
+       asp-route-pageNumber="@(pageIndex - 1)"
+       class="btn btn-outline-secondary @prevDisabled">
+        Previous
+    </a>
+
+    <span class="fw-semibold"> @pageIndex / @totalPages </span>
+
+    <a asp-action="Index"
+       asp-route-createdRange="@createdRange"
+       asp-route-email="@email"
+       asp-route-pageSize="@pageSize"
+       asp-route-pageNumber="@(pageIndex + 1)"
+       class="btn btn-outline-secondary @nextDisabled">
+        Next
+    </a>
+</div>

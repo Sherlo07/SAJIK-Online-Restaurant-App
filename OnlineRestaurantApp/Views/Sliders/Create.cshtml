@@ -1,0 +1,79 @@
+﻿@model OnlineRestaurantApp.Components.Slider
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h1>Create</h1>
+
+<h4>Slider</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="SliderId" class="control-label"></label>
+                <input asp-for="SliderId" class="form-control" />
+                <span asp-validation-for="SliderId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SliderText" class="control-label"></label>
+                <input asp-for="SliderText" class="form-control" />
+                <span asp-validation-for="SliderText" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SliderTextLink" class="control-label"></label>
+                <input asp-for="SliderTextLink" class="form-control" />
+                <span asp-validation-for="SliderTextLink" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SliderOrderNo" class="control-label"></label>
+                <input asp-for="SliderOrderNo" class="form-control" />
+                <span asp-validation-for="SliderOrderNo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreatedOn" class="control-label"></label>
+                <input asp-for="CreatedOn" class="form-control" />
+                <span asp-validation-for="CreatedOn" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Status" /> @Html.DisplayNameFor(model => model.Status)
+                </label>
+            </div>
+            <div class="form-group">
+                <label class="control-label"> Selected Slider Image </label>
+                <img src="" id="prevSliderImage" class="form-control" width="300" height="150" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="SliderImage" class="control-label"></label>
+                <input type="file" asp-for="SliderImage" class="form-control" onchange="preview(event)" />
+                <span asp-validation-for="SliderImage" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+<script type="text/javascript">
+    function preview(event)
+    {
+        var refImg = document.getElementById('prevSliderImage');
+        refImg.src = URL.createObjectURL(event.target.files[0]);
+
+    }
+
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

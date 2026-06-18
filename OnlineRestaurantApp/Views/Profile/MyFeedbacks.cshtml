@@ -1,0 +1,123 @@
+﻿@model IEnumerable<OnlineRestaurantApp.Components.Feedback>
+
+@{
+    ViewData["Title"] = "My Feedbacks";
+    Layout = "~/Views/Shared/_ProfileLayout.cshtml";
+}
+
+<div class="container py-4">
+
+    <!-- Page Header -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h3 class="fw-bold mb-0">My Feedbacks</h3>
+        <a asp-controller="Feedback" asp-action="Create" class="btn btn-outline-secondary rounded-3">
+            Submit Feedback
+        </a>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <!-- Empty State -->
+        <div class="alert alert-info shadow-sm d-flex align-items-start gap-2">
+            <i class="bi bi-info-circle"></i>
+            <div>
+                <p class="mb-2">
+                    You haven’t submitted any feedback yet.
+                </p>
+                Create
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow-lg rounded-4">
+            <div class="card-body p-0">
+
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Created</th>
+                                <th>Name</th>
+                                <th>Subject</th>
+                                <th>Message</th>
+                                <th>Image</th>
+                                <th>Status</th>
+                                <th class="pe-4">Admin Remarks</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var f in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4 text-muted">
+                                        @f.CreatedOn.ToString("dd MMM yyyy") <br />
+                                        <small>@f.CreatedOn.ToString("hh:mm tt")</small>
+                                    </td>
+
+                                    <td class="fw-semibold">
+                                        @f.Name
+                                    </td>
+
+                                    <td>
+                                        @f.Subject
+                                    </td>
+
+                                    <td style="max-width: 360px;">
+                                        <div class="text-truncate" title="@f.Description">
+                                            @f.Description
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        @if (!string.IsNullOrWhiteSpace(f.FeedbackImagePath))
+                                        {
+                                            <img src="@f.FeedbackImagePath"
+                                                 class="img-thumbnail rounded"
+                                                 style="width:80px;height:80px;object-fit:cover;" />
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small">—</span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @switch (f.Status)
+                                        {
+                                            case OnlineRestaurantApp.Components.FbStatus.Open:
+                                                <span class="badge bg-warning text-dark">Open</span>
+                                                break;
+                                            case OnlineRestaurantApp.Components.FbStatus.UnderProcessing:
+                                                <span class="badge bg-primary">In Progress</span>
+                                                break;
+                                            case OnlineRestaurantApp.Components.FbStatus.Closed:
+                                                <span class="badge bg-success">Closed</span>
+                                                break;
+                                            default:
+                                                <span class="badge bg-secondary">Unknown</span>
+                                                break;
+                                        }
+                                    </td>
+
+                                    <td style="max-width: 240px;" class="pe-4">
+                                        @if (!string.IsNullOrWhiteSpace(f.RemarksByAdmin))
+                                        {
+                                            <span>@f.RemarksByAdmin</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">—</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    }
+</div>

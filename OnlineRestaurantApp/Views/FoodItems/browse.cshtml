@@ -1,0 +1,658 @@
+﻿@using OnlineRestaurantApp.Utility
+@model PaginatedList<FoodItem>
+@{
+    ViewData["Title"] = ViewBag.SelectedCategoryName != null
+        ? $"Explore {ViewBag.SelectedCategoryName}"
+        : "Explore Menu";
+    
+    // Server-side unified sort (e.g., price_asc / rating_desc / disc_desc)
+    var unifiedSort = (ViewBag.Sort as string) ?? "";
+
+    // Item Type from controller / query ("veg" | "nonveg" | "")
+    var currentItemType = (ViewBag.ItemType as string)?.ToLowerInvariant() ?? "";
+
+    // Preserve other filters from the query / ViewBag
+    string currentSearch = Context.Request.Query["search"];
+    int? currentCategoryId = ViewBag.SelectedCategoryId as int?;
+}
+
+<section class="container my-4">
+    @* ---------- Header: search/category + counts + range ---------- *@
+    @{
+        // Safe reads from ViewBag
+        int page = ViewBag.Page is int p ? p : 1;
+        int pageSize = ViewBag.PageSize is int ps ? ps : 12;
+        int filteredTotal = ViewBag.FilteredTotal is int ft ? ft : 0;
+        int overallCategoryTotal = ViewBag.OverallCategoryTotal is int oct ? oct : 0;
+
+        int start = filteredTotal == 0 ? 0 : ((page - 1) * pageSize) + 1;
+        int end = Math.Min(page * pageSize, filteredTotal);
+
+        bool hasSearch = !string.IsNullOrWhiteSpace(currentSearch);
+        string categoryName = ViewBag.SelectedCategoryName as string ?? "";
+    }
+
+    <h4 class="mb-1">
+        @if (hasSearch)
+        {
+            <text>Search results for “</text>
+            <span class="text-primary">@currentSearch</span>
+            <text>”</text>
+
+            @* If also filtered to a category, show it *@
+            if (!string.IsNullOrWhiteSpace(categoryName))
+            {
+                <text> in </text>
+        
+                <span class="text-primary">@categoryName</span>
+            }
+
+            <span class="text-muted small ms-2">
+                (@filteredTotal @((filteredTotal == 1) ? "result" : "results"))
+            </span>
+        }
+        else
+        {
+            @ViewData["Title"]
+
+            <span class="text-muted small ms-2">
+                (@filteredTotal @((filteredTotal == 1) ? "item" : "items"))
+                @* When browsing a category, optionally show "(X of Y in this category)" *@
+                @if (ViewBag.SelectedCategoryId != null && overallCategoryTotal > 0)
+                {
+                    <text> — in </text>
+            
+                    <span class="text-primary">@categoryName</span>
+                    <span class="text-muted"> ( @filteredTotal of @overallCategoryTotal )</span>
+                }
+            </span>
+        }
+    </h4>
+
+    <div class="small text-muted mb-2">
+        @if (filteredTotal > 0)
+        {
+            <span>Showing @start–@end</span>
+        }
+    </div>
+
+    @* Optional: show a tiny pill for Item Type filter *@
+    @if (!string.IsNullOrWhiteSpace(currentItemType))
+    {
+        <div class="mb-2">
+            <span class="badge rounded-pill bg-light text-dark border">
+                Item Type: @((currentItemType == "veg") ? "Veg" : "Non‑Veg")
+            </span>
+        </div>
+    }
+
+    @* ===================== MULTI-DROPDOWN SORT + ITEM TYPE + APPLY/CLEAR ===================== *@
+    <form id="browseFiltersForm" class="row g-3 align-items-end mb-3" method="get" asp-controller="FoodItems" asp-action="Browse">
+
+        @* Price dropdown *@
+        <div class="col-12 col-sm-6 col-md-3">
+            <label class="form-label small text-muted mb-1">Price</label>
+            <select name="priceSort" id="priceSort" class="form-select form-select-sm">
+                @{
+                    bool priceAsc = unifiedSort == "price_asc";
+                    bool priceDesc = unifiedSort == "price_desc";
+                }
+
+                @if (!priceAsc && !priceDesc)
+                {
+                    <option value="" selected>(None)</option>
+                }
+                else
+                {
+                    <option value="">(None)</option>
+                }
+
+                @if (priceAsc)
+                {
+                    <option value="asc" selected>Low to High</option>
+                }
+                else
+                {
+                    <option value="asc">Low to High</option>
+                }
+
+                @if (priceDesc)
+                {
+                    <option value="desc" selected>High to Low</option>
+                }
+                else
+                {
+                    <option value="desc">High to Low</option>
+                }
+            </select>
+        </div>
+
+        @* Rating dropdown *@
+        <div class="col-12 col-sm-6 col-md-3">
+            <label class="form-label small text-muted mb-1">Rating</label>
+            <select name="ratingSort" id="ratingSort" class="form-select form-select-sm">
+                @{
+                    bool ratingAsc = unifiedSort == "rating_asc";
+                    bool ratingDesc = unifiedSort == "rating_desc";
+                }
+
+                @if (!ratingAsc && !ratingDesc)
+                {
+                    <option value="" selected>(None)</option>
+                }
+                else
+                {
+                    <option value="">(None)</option>
+                }
+
+                @if (ratingAsc)
+                {
+                    <option value="asc" selected>Low to High</option>
+                }
+                else
+                {
+                    <option value="asc">Low to High</option>
+                }
+
+                @if (ratingDesc)
+                {
+                    <option value="desc" selected>High to Low</option>
+                }
+                else
+                {
+                    <option value="desc">High to Low</option>
+                }
+            </select>
+        </div>
+
+        @* Discount dropdown *@
+        <div class="col-12 col-sm-6 col-md-3">
+            <label class="form-label small text-muted mb-1">Discount</label>
+            <select name="discountSort" id="discountSort" class="form-select form-select-sm">
+                @{
+                    bool discAsc = unifiedSort == "disc_asce"; // keep your naming
+                    bool discDesc = unifiedSort == "disc_desc";
+                }
+
+                @if (!discAsc && !discDesc)
+                {
+                    <option value="" selected>(None)</option>
+                }
+                else
+                {
+                    <option value="">(None)</option>
+                }
+
+                @if (discAsc)
+                {
+                    <option value="asc" selected>Low to High</option>
+                }
+                else
+                {
+                    <option value="asc">Low to High</option>
+                }
+
+                @if (discDesc)
+                {
+                    <option value="desc" selected>High to Low</option>
+                }
+                else
+                {
+                    <option value="desc">High to Low</option>
+                }
+            </select>
+        </div>
+
+        @* Item Type (Veg / Non‑Veg) *@
+        <div class="col-12 col-sm-6 col-md-3">
+            <label class="form-label small text-muted mb-1">Item Type</label>
+            <select name="itemType" id="itemType" class="form-select form-select-sm">
+                @if (string.IsNullOrEmpty(currentItemType))
+                {
+                    <option value="" selected>All</option>
+                }
+                else
+                {
+                    <option value="">All</option>
+                }
+
+                @if (currentItemType == "veg")
+                {
+                    <option value="veg" selected>Veg</option>
+                }
+                else
+                {
+                    <option value="veg">Veg</option>
+                }
+
+                @if (currentItemType == "nonveg")
+                {
+                    <option value="nonveg" selected>Non‑Veg</option>
+                }
+                else
+                {
+                    <option value="nonveg">Non‑Veg</option>
+                }
+            </select>
+        </div>
+
+        @* Buttons *@
+        <div class="col-12 d-flex gap-2">
+            <button class="btn btn-dark btn-sm" type="submit">Apply</button>
+            <button id="clearSortBtn" class="btn btn-outline-secondary btn-sm" type="button">
+                Clear sort
+            </button>
+        </div>
+
+        @* Preserve filters *@
+        @if (!string.IsNullOrEmpty(currentSearch))
+        {
+            <input type="hidden" name="search" value="@currentSearch" />
+        }
+        @if (currentCategoryId.HasValue)
+        {
+            <input type="hidden" name="categoryId" value="@currentCategoryId" />
+        }
+        @* Controller maps price/rating/discount to a single 'sort'. Item Type goes directly as 'itemType'. *@
+    </form>
+    @* ========================================================================================= *@
+
+    @* -------- No results UX -------- *@
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info">
+            @if (!string.IsNullOrWhiteSpace(currentSearch))
+            {
+                <span>No results for “<b>@currentSearch</b>”</span>
+                @if (!string.IsNullOrWhiteSpace(categoryName))
+                {
+                    <span> in <b>@categoryName</b></span>
+                }
+                <span>. Try changing your filters.</span>
+            }
+            else if (!string.IsNullOrWhiteSpace(categoryName))
+            {
+                <span>No items found in <b>@categoryName</b>.</span>
+            }
+            else
+            {
+                <span>No items found.</span>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var item in Model)
+            {
+                // Veg / Non-veg indicator by ItemTypeId
+                bool? isVeg = null;
+                if (item.ItemTypeId == 301) isVeg = true;
+                else if (item.ItemTypeId == 302) isVeg = false;
+
+                <!-- CARD -->
+                <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                    <div class="card h-100 shadow-sm position-relative">
+
+                        <!-- Veg/Non-Veg indicator (overlay on image) -->
+                        <div class="position-absolute top-0 end-0 p-2 z-3">
+                            @if (isVeg.HasValue)
+                            {
+                                <div class="bg-white border rounded-3 d-inline-flex align-items-center justify-content-center shadow-sm"
+                                     style="width:28px;height:28px;"
+                                     title="@(isVeg.Value ? "Vegetarian" : "Non‑Vegetarian")"
+                                     aria-label="@(isVeg.Value ? "Vegetarian" : "Non‑Vegetarian")">
+                                    <span class="rounded-circle d-inline-block"
+                                          style="width:12px;height:12px;background:@(isVeg.Value ? "#2BA84A" : "#C62828");"></span>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Image -->
+                        <div class="ratio ratio-4x3 bg-light">
+                            @if (!string.IsNullOrWhiteSpace(item.ItemImagePath))
+                            {
+                                <img src="@item.ItemImagePath" alt="@item.ItemName" class="card-img-top object-fit-cover" />
+                            }
+                            else
+                            {
+                                <div class="d-flex align-items-center justify-content-center text-muted small">
+                                    No Image
+                                </div>
+                            }
+                        </div>
+
+                        <div class="card-body p-2">
+                            <!-- Title & Category -->
+                            <h6 class="card-title mb-0 text-truncate" title="@item.ItemName">
+                                @item.ItemName
+                            </h6>
+                            <div class="small text-muted text-truncate" title="@item.Category?.CategoryName">
+                                @item.Category?.CategoryName
+                            </div>
+
+                            <!-- ===== Two rows x two columns grid ===== -->
+                            <div class="mt-2">
+                                <div class="row row-cols-2 g-2 small">
+                                    <!-- Row 1, Col 1: Best Seller -->
+                                    <div class="col d-flex align-items-center">
+                                        @if (item.IsBestSeller)
+                                        {
+                                            <span class="badge bg-warning text-dark w-100 text-center">Best Seller</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted w-100 text-center">Regular</span>
+                                        }
+                                    </div>
+
+                                    <!-- Row 1, Col 2: Availability -->
+                                    <div class="col d-flex align-items-center">
+                                        @if (item.IsAvailable)
+                                        {
+                                            <span class="badge bg-success w-100 text-center">Available</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary w-100 text-center">Unavailable</span>
+                                        }
+                                    </div>
+
+                                    <!-- Row 2, Col 1: Price (discount aware) -->
+                                    <div class="col">
+                                        @{
+                                            var hasDiscount = (item.SellingPrice > 0 && item.SellingPrice < item.ActualPrice)
+                                            || item.DiscountPer > 0;
+                                            int autoDiscountPer = 0;
+
+                                            if (item.ActualPrice > 0 && item.SellingPrice > 0 && item.SellingPrice < item.ActualPrice)
+                                            {
+                                                autoDiscountPer = (int)Math.Round((decimal)(item.ActualPrice - item.SellingPrice) * 100m / item.ActualPrice);
+                                            }
+
+                                            var showDiscountPer = item.DiscountPer > 0 ? item.DiscountPer : autoDiscountPer;
+                                        }
+
+                                        @if (hasDiscount)
+                                        {
+                                            <div class="d-flex flex-wrap align-items-baseline justify-content-center gap-1">
+                                                <span class="fw-bold text-danger">₹@item.SellingPrice</span>
+                                                <span class="text-muted text-decoration-line-through">₹@item.ActualPrice</span>
+
+                                                @if (showDiscountPer > 0)
+                                                {
+                                                    <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                                        @showDiscountPer% OFF
+                                                    </span>
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="text-center fw-semibold text-dark">₹@item.ActualPrice</div>
+                                        }
+                                    </div>
+
+                                    <!-- Row 2, Col 2: Rating -->
+                                    <div class="col">
+                                        @if (item.Rating > 0)
+                                        {
+                                            <div class="text-center">
+                                                <span class="text-warning" aria-hidden="true">★</span>
+                                                <span class="fw-semibold">@item.Rating</span>
+                                                <span class="text-muted">(@item.RatingBy)</span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="text-center text-muted">No rating</div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- ======================================= -->
+                            <!-- Meal time chips -->
+                            <div class="mt-2 d-flex flex-wrap gap-1">
+                                @if (item.IsBreakFast)
+                                {
+                                    <span class="badge rounded-pill bg-light text-dark border">Breakfast</span>
+                                }
+                                @if (item.IsLunch)
+                                {
+                                    <span class="badge rounded-pill bg-light text-dark border">Lunch</span>
+                                }
+                                @if (item.IsDinner)
+                                {
+                                    <span class="badge rounded-pill bg-light text-dark border">Dinner</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="card-footer bg-white border-0 pb-2">
+                            <div class="d-grid text-center" data-item-id="@item.ItemId">
+                                @if (!item.IsAvailable)
+                                {
+                                    <button class="btn btn-sm btn-secondary" disabled>Unavailable</button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-sm btn-primary add-btn">Add</button>
+
+                                    <div class="input-group input-group-sm qty-controls d-none mt-2 mx-auto" style="max-width: 160px;">
+                                        <button class="btn btn-outline-secondary minus-btn" type="button" aria-label="Decrease quantity">−</button>
+                                        <input class="form-control text-center qty-input" value="1" aria-label="Quantity" inputmode="numeric" />
+                                        <button class="btn btn-outline-secondary plus-btn" type="button" aria-label="Increase quantity">+</button>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- /CARD -->
+            }
+        </div>
+    }
+</section>
+
+@section Scripts {
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('browseFiltersForm');
+            if (!form) return;
+
+            // Auto-submit on change of dropdowns
+            ['#priceSort', '#ratingSort', '#discountSort', '#itemType'].forEach(sel => {
+              const el = form.querySelector(sel);
+              if (el) el.addEventListener('change', () => form.submit());
+            });
+          });
+
+
+        // Clear sort: reset only the sort dropdowns to (None), keep Item Type & other filters
+        document.addEventListener('DOMContentLoaded', function () {
+            const clearBtn = document.getElementById('clearSortBtn');
+            if (!clearBtn) return;
+
+            clearBtn.addEventListener('click', function () {
+                const form = clearBtn.closest('form');
+                if (!form) return;
+
+                // Reset the 3 sort dropdowns
+                const price    = form.querySelector('#priceSort');
+                const rating   = form.querySelector('#ratingSort');
+                const discount = form.querySelector('#discountSort');
+                if (price)    price.value    = "";
+                if (rating)   rating.value   = "";
+                if (discount) discount.value = "";
+
+                // ✅ Also clear Item Type (Veg/Non‑Veg)
+                const itemType = form.querySelector('#itemType');
+                if (itemType) itemType.value = "";
+
+                // ✅ Ensure no unified 'sort' sneaks in
+                const hiddenSort = form.querySelector('input[name="sort"]');
+                if (hiddenSort) hiddenSort.remove();
+
+                // (Optional) If you want *pure category default* with no search,
+                // remove search hidden field too. Comment this out if you want to keep search.
+                const search = form.querySelector('input[name="search"]');
+                if (search) search.remove();
+
+                // Submit → the controller will receive itemType="", no sort, same categoryId
+                form.submit();
+            });
+        });
+
+        function loginUrlWithReturn() {
+            const current = window.location.pathname + window.location.search + window.location.hash;
+            return `/User/Login?returnUrl=${encodeURIComponent(current)}`;
+        }
+
+        async function postJson(url, data) {
+            const r = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+                credentials: 'same-origin'
+            });
+
+            if (r.status === 401 || r.redirected) {
+                let u = loginUrlWithReturn();
+                try {
+                    const j = await r.clone().json();
+                    if (j?.loginUrl) u = j.loginUrl;
+                } catch {}
+                window.location.href = u;
+                return;
+            }
+
+            if (!r.ok) throw new Error('net');
+            return await r.json();
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const r = await fetch('/cart/summary', { cache: 'no-store' });
+                if (!r.ok) return;
+                const j = await r.json();
+                if (!j?.ok) return;
+
+                const qtyById = new Map(j.items.map(x => [x.foodItemId, x.quantity]));
+
+                document.querySelectorAll('[data-item-id]').forEach(wrap => {
+                    const id = parseInt(wrap.getAttribute('data-item-id'));
+                    const qty = qtyById.get(id) || 0;
+
+                    if (qty > 0) {
+                        wrap.querySelector('.add-btn').classList.add('d-none');
+
+                        const qc = wrap.querySelector('.qty-controls');
+                        qc.classList.remove('d-none');
+                        qc.querySelector('.qty-input').value = qty;
+                    }
+                });
+
+                window.dispatchEvent(new CustomEvent('cart:changed', {
+                    detail: { count: j.items.reduce((s, x) => s + x.quantity, 0) }
+                }));
+            } catch {}
+        });
+
+        document.addEventListener('click', async (e) => {
+            if (e.target.closest('.add-btn')) {
+                const wrap = e.target.closest('[data-item-id]');
+                const itemId = parseInt(wrap.getAttribute('data-item-id'));
+                try {
+                    const resp = await postJson('/cart/add', { itemId, qty: 1 });
+                    if (resp?.ok) {
+                        e.target.classList.add('d-none');
+                        const qc = wrap.querySelector('.qty-controls');
+                        qc.classList.remove('d-none');
+                        qc.querySelector('.qty-input').value = resp.lineQty || 1;
+                        window.dispatchEvent(new CustomEvent('cart:changed', { detail: { count: resp.count } }));
+                    }
+                } catch {}
+            }
+
+            if (e.target.closest('.plus-btn')) {
+                const wrap = e.target.closest('[data-item-id]');
+                const itemId = parseInt(wrap.getAttribute('data-item-id'));
+                const input = wrap.querySelector('.qty-input');
+                const qty = (parseInt(input.value) || 1) + 1;
+
+                try {
+                    const resp = await postJson('/cart/update', { itemId, qty });
+                    if (resp?.ok) {
+                        input.value = resp.lineQty || qty;
+                        window.dispatchEvent(new CustomEvent('cart:changed', { detail: { count: resp.count } }));
+                    }
+                } catch {}
+            }
+
+            if (e.target.closest('.minus-btn')) {
+                const wrap = e.target.closest('[data-item-id]');
+                const itemId = parseInt(wrap.getAttribute('data-item-id'));
+                const input = wrap.querySelector('.qty-input');
+                const qty = (parseInt(input.value) || 1) - 1;
+
+                try {
+                    const resp = await postJson('/cart/update', { itemId, qty });
+                    if (resp?.ok) {
+                        if ((resp.lineQty ?? qty) <= 0) {
+                            wrap.querySelector('.qty-controls').classList.add('d-none');
+                            wrap.querySelector('.add-btn').classList.remove('d-none');
+                        } else {
+                            input.value = resp.lineQty;
+                        }
+                        window.dispatchEvent(new CustomEvent('cart:changed', { detail: { count: resp.count } }));
+                    }
+                } catch {}
+            }
+        });
+    </script>
+}
+@{
+    // Enable/disable buttons based on PaginatedList<T> flags
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+
+    // Gather existing filters to pass along
+    string sort = ViewBag.Sort as string ?? "";
+    string itemTypeSel = (ViewBag.ItemType as string) ?? "";
+    string searchQ = Context.Request.Query["search"];
+    int? catId = ViewBag.SelectedCategoryId as int?;
+    int pageSizeVal = ViewBag.PageSize is int psv ? psv : 12;
+}
+
+@if (Model.TotalPages > 0)
+{
+    <div class="d-flex align-items-center justify-content-center gap-3 my-3">
+        <a asp-action="Browse"
+           asp-route-categoryId="@catId"
+           asp-route-search="@searchQ"
+           asp-route-sort="@sort"
+           asp-route-itemType="@itemTypeSel"
+           asp-route-pageSize="@pageSizeVal"
+           asp-route-page="@(Model.PageIndex - 1)"
+           class="btn btn-outline-secondary @prevDisabled"
+           aria-disabled="@(!Model.HasPreviousPage)">
+            Previous
+        </a>
+
+        <span class="fw-semibold">@Model.PageIndex / @Model.TotalPages</span>
+
+        <a asp-action="Browse"
+           asp-route-categoryId="@catId"
+           asp-route-search="@searchQ"
+           asp-route-sort="@sort"
+           asp-route-itemType="@itemTypeSel"
+           asp-route-pageSize="@pageSizeVal"
+           asp-route-page="@(Model.PageIndex + 1)"
+           class="btn btn-outline-secondary @nextDisabled"
+           aria-disabled="@(!Model.HasNextPage)">
+            Next
+        </a>
+    </div>
+}

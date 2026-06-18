@@ -1,0 +1,221 @@
+﻿
+
+@{
+    Layout = "~/Views/Shared/_PaymentLayout.cshtml";
+
+    ViewData["Title"] = "Payment";
+
+    int orderId = (int)ViewData["OrderId"];
+
+    decimal amount = (decimal)ViewData["Amount"];
+
+    string cardType = ViewData["cardType"] as string ?? "";
+
+    string cardNumber = ViewData["cardNumber"] as string ?? "";
+
+    string expiryMonth = ViewData["expiryMonth"] as string ?? "";
+
+    string expiryYear = ViewData["expiryYear"] as string ?? "";
+
+    string cvv = ViewData["cvv"] as string ?? "";
+
+    // Prefill address if available
+
+    string addr1 = ViewData["Addr1"] as string ?? "";
+
+    string addr2 = ViewData["Addr2"] as string ?? "";
+
+    string city = ViewData["City"] as string ?? "";
+
+    string state = ViewData["State"] as string ?? "";
+
+    string pincode = ViewData["Pincode"] as string ?? "";
+
+    string landmark = ViewData["Landmark"] as string ?? "";
+
+}
+
+<div class="container py-4">
+    <div class="d-flex align-items-center mb-3">
+        <h4 class="m-0">
+
+            Payment for Order <span class="text-primary">#@orderId</span>
+        </h4>
+        <div class="ms-auto text-muted">
+
+            Total: <strong>₹ @amount.ToString("0.00")</strong>
+        </div>
+    </div>
+
+    @if (TempData["Err"] is string err && !string.IsNullOrWhiteSpace(err))
+
+    {
+        <div class="alert alert-danger" role="alert">@err</div>
+
+    }
+
+    <form action="/payment/pay" method="post" novalidate>
+
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="orderId" value="@orderId" />
+
+        <div class="row g-3">
+            <!-- LEFT: Card Details -->
+            <div class="col-lg-7">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white border-0 pb-0">
+                        <h5 class="card-title mb-0">Card Details</h5>
+                        <p class="text-muted small mb-0">We accept Debit and Credit cards</p>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Payment type -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Payment Type</label>
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" name="cardType" id="payDebit"
+                                       autocomplete="off" value="Debit"
+                                       @(cardType == "Credit" ? "" : "checked") />
+                                <label class="btn btn-outline-secondary" for="payDebit">Debit Card</label>
+
+                                <input type="radio" class="btn-check" name="cardType" id="payCredit"
+                                       autocomplete="off" value="Credit"
+                                       @(cardType == "Credit" ? "checked" : "") />
+                                <label class="btn btn-outline-secondary" for="payCredit">Credit Card</label>
+                            </div>
+                        </div>
+
+                        <!-- Card number -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Card Number</label>
+                            <input type="text" class="form-control" name="cardNumber"
+                                   value="@cardNumber" inputmode="numeric" maxlength="19"
+                                   placeholder="1234 5678 9012 3456"
+                                   oninput="formatCardNumber(this)" />
+                            <div class="form-text">Enter 16 digits. Spaces are added automatically.</div>
+                        </div>
+
+                        <!-- Expiry + CVV -->
+                        <div class="row g-3 mb-2">
+                            <div class="col-6 col-md-4">
+                                <label class="form-label fw-semibold">Expiry Month</label>
+                                <input type="text" class="form-control" name="expiryMonth"
+                                       value="@expiryMonth" inputmode="numeric"
+                                       placeholder="MM" maxlength="2"
+                                       oninput="numbersOnly(this)" />
+                            </div>
+
+                            <div class="col-6 col-md-4">
+                                <label class="form-label fw-semibold">Expiry Year</label>
+                                <input type="text" class="form-control" name="expiryYear"
+                                       value="@expiryYear" inputmode="numeric"
+                                       placeholder="YYYY" maxlength="4"
+                                       oninput="numbersOnly(this)" />
+                            </div>
+
+                            <div class="col-12 col-md-4">
+                                <label class="form-label fw-semibold">CVV</label>
+                                <input type="password" class="form-control" name="cvv"
+                                       value="@cvv" inputmode="numeric"
+                                       maxlength="4" placeholder="123"
+                                       oninput="numbersOnly(this)" />
+                            </div>
+                        </div>
+
+                        <hr class="my-3" />
+
+                        <!-- Amount + Submit -->
+                        <div class="d-flex align-items-center">
+                            <div class="me-auto">
+                                <div class="text-muted small">Amount to Pay</div>
+                                <div class="fs-4">₹ @amount.ToString("0.00")</div>
+                            </div>
+
+                            <button type="submit" class="btn btn-success btn-lg px-4">
+
+                                Pay &amp; Complete Order
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Delivery Address -->
+            <div class="col-lg-5">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white border-0 pb-0">
+                        <h5 class="card-title mb-0">Delivery Address</h5>
+                        <p class="text-muted small mb-0">Enter your delivery location</p>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <label class="form-label fw-semibold">Address Line 1</label>
+                            <input type="text" class="form-control" name="addressLine1"
+                                   value="@addr1" required />
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label fw-semibold">Address Line 2 (optional)</label>
+                            <input type="text" class="form-control" name="addressLine2"
+                                   value="@addr2" />
+                        </div>
+
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">City</label>
+                                <input type="text" class="form-control" name="city"
+                                       value="@city" required />
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">State</label>
+                                <input type="text" class="form-control" name="state"
+                                       value="@state" required />
+                            </div>
+                        </div>
+
+                        <div class="row g-2 mt-1">
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">Pincode</label>
+                                <input type="text" class="form-control" name="pincode"
+                                       value="@pincode" inputmode="numeric"
+                                       maxlength="10" oninput="numbersOnly(this)" required />
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">Landmark (optional)</label>
+                                <input type="text" class="form-control" name="landmark"
+                                       value="@landmark" />
+                            </div>
+                        </div>
+
+                        <div class="form-text mt-2">
+
+                            This will be saved as your default delivery address.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+
+        function numbersOnly(el) { el.value = (el.value || '').replace(/[^0-9]/g, ''); }
+
+        function formatCardNumber(el) {
+
+            const digits = (el.value || '').replace(/\D/g, '').slice(0, 16);
+
+            const parts = [];
+
+            for (let i = 0; i < digits.length; i += 4) parts.push(digits.substring(i, i + 4));
+
+            el.value = parts.join(' ');
+
+        }
+    </script>
+
+}
+

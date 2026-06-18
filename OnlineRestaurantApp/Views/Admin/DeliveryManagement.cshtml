@@ -1,0 +1,59 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "Delivery Management";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var ordersSelect = ViewBag.OrdersSelectList as List<SelectListItem> ?? new();
+    var employeesSelect = ViewBag.EmployeesSelectList as List<SelectListItem> ?? new();
+}
+
+<div class="d-flex align-items-center mb-3">
+    <h4 class="m-0">Delivery Management</h4>
+    
+</div>
+
+@if (TempData["Err"] is string err && !string.IsNullOrWhiteSpace(err))
+{
+    <div class="alert alert-danger">@err</div>
+}
+@if (TempData["Msg"] is string msg && !string.IsNullOrWhiteSpace(msg))
+{
+    <div class="alert alert-success">@msg</div>
+}
+
+<div class="card shadow-sm border-0">
+  <div class="card-body">
+    AssignDelivery
+        <form asp-controller="Admin" asp-action="AssignDelivery" method="post" class="mb-0">
+        @Html.AntiForgeryToken()
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Unassigned Orders</label>
+                <select name="selectedOrderId" class="form-select" required>
+                    <option value="">-- Select Order --</option>
+                    @foreach (var opt in ordersSelect)
+                    {
+                        <option value="@opt.Value">@opt.Text</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Available Employees</label>
+                <select name="selectedEmployeeId" class="form-select" required>
+                    <option value="">-- Select Employee --</option>
+                    @foreach (var opt in employeesSelect)
+                    {
+                        <option value="@opt.Value">@opt.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary">Assign</button>
+        </div>
+    </form>
+  </div>
+</div>

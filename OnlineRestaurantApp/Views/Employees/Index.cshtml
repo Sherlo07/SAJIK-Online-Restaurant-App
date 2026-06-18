@@ -1,0 +1,147 @@
+﻿@using OnlineRestaurantApp.Utility
+@model PaginatedList<OnlineRestaurantApp.Components.Employee>
+
+@{
+    ViewData["Title"] = "Employees Management";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var list = Model ?? Enumerable.Empty<OnlineRestaurantApp.Components.Employee>();
+}
+
+<h2>
+    Employees Management (@ViewData["FilteredTotal"]@(
+        (ViewData["CurrentFilter"] as string)?.Length > 0
+            ? $" of {ViewData["OverallTotal"]}"
+            : ""
+    ))
+</h2>
+
+<p class="d-flex justify-content-between align-items-center">
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i> Create New
+    </a>
+    @{
+        var activeOnly = Convert.ToString(ViewData["ActiveOnly"]);
+        var statusOptions = new List<SelectListItem>
+        {
+        new SelectListItem { Text = "All",     Value = "",      Selected = string.IsNullOrEmpty(activeOnly) },
+        new SelectListItem { Text = "Active",  Value = "true",  Selected = string.Equals(activeOnly, "true",  StringComparison.OrdinalIgnoreCase) },
+        new SelectListItem { Text = "Inactive",Value = "false", Selected = string.Equals(activeOnly, "false", StringComparison.OrdinalIgnoreCase) },
+        };
+    }
+
+    <form asp-action="Index" method="get" class="mb-0">
+        <div class="form-actions no-color d-flex align-items-center gap-2">
+            <label class="mb-0">
+                Find by name / email / phone:
+                <input type="text"
+                       name="SearchString"
+                       value="@ViewData["CurrentFilter"]"
+                       class="form-control d-inline-block ms-1"
+                       style="width: 260px;" />
+            </label>
+            <select name="ActiveOnly" class="form-select" style="width: 140px;" asp-items="statusOptions"></select>
+            <input type="submit" value="Search" class="btn btn-outline-primary" />
+            <a asp-action="Index" class="btn btn-outline-secondary">Back to Full List</a>
+        </div>
+    </form>
+</p>
+
+<table class="table table-striped table-hover align-middle">
+    <thead class="table-light">
+        <tr>
+            <th>
+                <a asp-action="Index"
+                   asp-route-sortOrder="@ViewData["NameSort"]"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   asp-route-ActiveOnly="@ViewData["ActiveOnly"]"
+                   class="text-decoration-none">
+                    Full Name
+                </a>
+            </th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>
+                <a asp-action="Index"
+                   asp-route-sortOrder="@ViewData["RoleSort"]"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   asp-route-ActiveOnly="@ViewData["ActiveOnly"]"
+                   class="text-decoration-none">
+                    Role
+                </a>
+            </th>
+            <th>
+                <a asp-action="Index"
+                   asp-route-sortOrder="@ViewData["StatusSort"]"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   asp-route-ActiveOnly="@ViewData["ActiveOnly"]"
+                   class="text-decoration-none">
+                    Status
+                </a>
+            </th>
+            <th>
+                <a asp-action="Index"
+                   asp-route-sortOrder="@ViewData["CreatedSort"]"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   asp-route-ActiveOnly="@ViewData["ActiveOnly"]"
+                   class="text-decoration-none">
+                    Created On
+                </a>
+            </th>
+            <th class="text-center" style="width: 220px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in list)
+        {
+            <tr>
+                <td>@item.FullName</td>
+                <td>@(string.IsNullOrWhiteSpace(item.Email) ? "-" : item.Email)</td>
+                <td>@(string.IsNullOrWhiteSpace(item.Phone) ? "-" : item.Phone)</td>
+                <td>@item.Role</td>
+                <td>
+                    @if (item.IsActive)
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Inactive</span>
+                    }
+                </td>
+                <td>@item.CreatedOn.ToString("dd-MMM-yyyy HH:mm")</td>
+                <td class="text-center">
+                    <a asp-action="Edit" asp-route-id="@item.EmployeeId" class="btn btn-sm btn-outline-warning me-1">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.EmployeeId" class="btn btn-sm btn-outline-info me-1">Details</a>
+                    <a asp-action="Delete" asp-route-id="@item.EmployeeId" class="btn btn-sm btn-outline-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<div class="d-flex align-items-center justify-content-center gap-3">
+    <a asp-action="Index"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-pageNumber="@(Model.PageIndex - 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       asp-route-ActiveOnly="@ViewData["ActiveOnly"]"
+       class="btn btn-outline-secondary @prevDisabled">
+        Previous
+    </a>
+
+    <span class="fw-semibold"> @Model.PageIndex / @Model.TotalPages </span>
+
+    <a asp-action="Index"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-pageNumber="@(Model.PageIndex + 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       asp-route-ActiveOnly="@ViewData["ActiveOnly"]"
+       class="btn btn-outline-secondary @nextDisabled">
+        Next
+    </a>
+</div>

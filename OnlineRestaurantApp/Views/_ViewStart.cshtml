@@ -1,0 +1,6 @@
+﻿@{
+    //Layout = "_Layout";
+    Layout = (User?.Identity != null && User.Identity.IsAuthenticated)
+    ? "~/Views/Shared/_UserLayout.cshtml" //for logged-in users
+    : "~/Views/Shared/_Layout.cshtml"; //for anonymous users
+}

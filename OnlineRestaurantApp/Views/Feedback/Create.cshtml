@@ -1,0 +1,124 @@
+﻿@model OnlineRestaurantApp.Components.Feedback
+
+@{
+    ViewData["Title"] = "Submit Feedback";
+    Layout = "~/Views/Shared/_ProfileLayout.cshtml";  // Consistent with profile pages
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
+
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <!-- Header -->
+                <div class="card-header bg-primary bg-gradient text-white text-center py-3">
+                    <i class="bi bi-chat-left-text fs-1 mb-1"></i>
+                    <h4 class="fw-semibold mb-0">Submit Feedback</h4>
+                    <p class="small opacity-75 mb-0">
+                        Share your experience with us
+                    </p>
+                </div>
+
+                <!-- Body -->
+                <div class="card-body p-4">
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="alert alert-danger py-2"
+                         role="alert"></div>
+
+                    <form asp-action="Create"
+                          method="post"
+                          enctype="multipart/form-data">
+
+                        @Html.AntiForgeryToken()
+
+                        <!-- Name -->
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label fw-semibold"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Subject -->
+                        <div class="mb-3">
+                            <label asp-for="Subject" class="form-label fw-semibold"></label>
+                            <input asp-for="Subject" class="form-control" />
+                            <span asp-validation-for="Subject" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label fw-semibold"></label>
+                            <textarea asp-for="Description"
+                                      class="form-control"
+                                      rows="5"
+                                      placeholder="Describe your feedback..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Image Preview -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Image (optional)</label>
+                            <img id="prevImage"
+                                 class="img-fluid border rounded mb-2 d-none"
+                                 style="max-height:220px;" />
+                            <input type="file"
+                                   asp-for="ItemImage"
+                                   class="form-control"
+                                   accept=".jpg,.jpeg,.png"
+                                   onchange="preview(event)" />
+                            <span asp-validation-for="ItemImage" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label fw-semibold"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Mobile -->
+                        <div class="mb-3">
+                            <label asp-for="Mobile" class="form-label fw-semibold"></label>
+                            <input asp-for="Mobile" class="form-control" />
+                            <span asp-validation-for="Mobile" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit"
+                                    class="btn btn-primary px-4 rounded-pill">
+                                <i class="bi bi-send me-1"></i> Submit
+                            </button>
+
+                            <a asp-controller="FoodItems"
+                               asp-action="Browse"
+                               class="btn btn-outline-secondary rounded-pill">
+                                Cancel
+                            </a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function preview(event) {
+            const img = document.getElementById("prevImage");
+            const file = event.target.files[0];
+            if (!file) {
+                img.classList.add("d-none");
+                return;
+            }
+            img.src = URL.createObjectURL(file);
+            img.classList.remove("d-none");
+        }
+    </script>
+
+    <partial name="_ValidationScriptsPartial" />
+}

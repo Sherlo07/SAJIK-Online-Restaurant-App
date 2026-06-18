@@ -1,0 +1,129 @@
+﻿@model OnlineRestaurantApp.Components.FoodItem
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h1>Create</h1>
+
+<h4>FoodItem</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="ItemId" class="control-label"></label>
+                <input asp-for="ItemId" class="form-control" />
+                <span asp-validation-for="ItemId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CategoryId" class="control-label"></label>
+                <select asp-for="CategoryId" class ="form-control" asp-items="ViewBag.CategoryId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="ItemTypeId" class="control-label"></label>
+                <select asp-for="ItemTypeId" class ="form-control" asp-items="ViewBag.ItemTypeId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="ItemName" class="control-label"></label>
+                <input asp-for="ItemName" class="form-control" />
+                <span asp-validation-for="ItemName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ActualPrice" class="control-label"></label>
+                <input asp-for="ActualPrice" class="form-control" />
+                <span asp-validation-for="ActualPrice" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Rating" class="control-label"></label>
+                <input asp-for="Rating" class="form-control" />
+                <span asp-validation-for="Rating" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RatingBy" class="control-label"></label>
+                <input asp-for="RatingBy" class="form-control" />
+                <span asp-validation-for="RatingBy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ItemImage" class="control-label"></label>
+                <img src="" id="prevImage" width="300" height="225"/>
+            </div>
+            <div class="form-group">
+                <label asp-for="ItemImage" class="control-label"></label>
+                <input type="file" asp-for="ItemImage" class="form-control" onchange="preview(event)" />
+                <span asp-validation-for="ItemImage" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ItemDescription" class="control-label"></label>
+                <textarea asp-for="ItemDescription" class="form-control" rows="10" cols="30"></textarea>
+                <span asp-validation-for="ItemDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsAvailable" /> @Html.DisplayNameFor(model => model.IsAvailable)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsBestSeller" /> @Html.DisplayNameFor(model => model.IsBestSeller)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsBreakFast" /> @Html.DisplayNameFor(model => model.IsBreakFast)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsLunch" /> @Html.DisplayNameFor(model => model.IsLunch)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsSnack" /> @Html.DisplayNameFor(model => model.IsSnack)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsDinner" /> @Html.DisplayNameFor(model => model.IsDinner)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="DiscountPer" class="control-label"></label>
+                <input asp-for="DiscountPer" class="form-control" />
+                <span asp-validation-for="DiscountPer" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SellingPrice" class="control-label"></label>
+                <input asp-for="SellingPrice" class="form-control" />
+                <span asp-validation-for="SellingPrice" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsFastMoving" /> @Html.DisplayNameFor(model => model.IsFastMoving)
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+<script type="text/javascript">
+    function preview(event)
+    {
+        var refImg=document.getElementById("prevImage");
+        refImg.src=URL.createObjectURL(event.target.files[0]);
+    }
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,245 @@
+﻿@using OnlineRestaurantApp.Utility
+@model PaginatedList<FoodItem>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+
+    <form asp-action="Index" method="get">
+        <div class="form-actions no-color">
+            <p>
+                <label>
+                    Find by name:
+                    <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" />
+                </label>
+                <input type="submit" value="Search" class="btn btn-default" /> |
+                <a asp-action="Index">Back to Full List</a>
+            </p>
+        </div>
+
+        <div class="col-md-3">
+            <label>Filter by Category:</label>
+            <select name="categoryId" asp-items="ViewBag.CategoryList" class="form-control">
+                <option value="">-- All Categories --</option>
+            </select>
+        </div>
+
+        <div class="col-md-3 mt-4">
+            <button type="submit" class="btn btn-primary">Apply Filters</button>
+            <a asp-action="Index" class="btn btn-secondary">Reset</a>
+        </div>
+        
+        <div class="col-md-3">
+            <label>Sort by Price:</label>
+            <select name="sortOrder" class="form-control">
+                <option value="">-- Select --</option>
+
+                @if ((ViewData["CurrentSort"] as string) == "price_asc")
+                {
+                    <option value="price_asc" selected>Low → High</option>
+                }
+                else
+                {
+                    <option value="price_asc">Low → High</option>
+                }
+
+                @if ((ViewData["CurrentSort"] as string) == "price_desc")
+                {
+                    <option value="price_desc" selected>High → Low</option>
+                }
+                else
+                {
+                    <option value="price_desc">High → Low</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-30 mt-3">Apply Filters</button>
+            
+        </div>
+
+
+    </form>
+</p>
+
+<div>
+    <h4>FoodItem</h4>
+
+    @foreach (var item in Model)
+    {
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">
+                <!-- Sort by Item Name (preserve currentFilter & categoryId) -->
+                <a asp-action="Index"
+                   asp-route-sortOrder="@ViewData["NameSort"]"
+                   asp-route-currentFilter='@ViewData["CurrentFilter"]'
+                   @*asp-route-categoryId='@ViewData["CurrentCategory"]'*@
+                   asp-route-pageNumber="1">
+                    ItemName
+                </a>
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(modelItem => item.ItemName)
+            </dd>
+
+            <dt class="col-sm-2">
+                <!-- Sort by Actual Price (toggle via PriceSort from controller if you added it) -->
+                <a asp-action="Index"
+                   asp-route-sortOrder='@((ViewData["PriceSort"] ?? "price_asce").ToString())'
+                   asp-route-currentFilter='@ViewData["CurrentFilter"]'
+                   @*asp-route-categoryId='@ViewData["CurrentCategory"]'*@
+                   asp-route-pageNumber="1">
+                    @Html.DisplayNameFor(model => item.ActualPrice)
+                </a>
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(modelItem => item.ActualPrice)
+            </dd>
+
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(modelItem => item.Rating)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(modelItem => item.Rating)
+            </dd>
+
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(modelItem => item.RatingBy)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(modelItem => item.RatingBy)
+            </dd>
+
+            <dt class="col-sm-2">
+                Item Image
+            </dt>
+            <dd class="col-sm-10">
+                <img src="@item.ItemImagePath" width="300" height="225" />
+            </dd>
+
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(modelItem => item.ItemDescription)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(modelItem => item.ItemDescription)
+            </dd>
+
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(modelItem => item.IsAvailable)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(modelItem => item.IsAvailable)
+            </dd>
+
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(modelItem => item.IsBestSeller)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(modelItem => item.IsBestSeller)
+            </dd>
+
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(modelItem => item.IsBreakFast)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(modelItem => item.IsBreakFast)
+            </dd>
+
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(modelItem => item.IsLunch)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(modelItem => item.IsLunch)
+            </dd>
+
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(modelItem => item.IsSnack)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(modelItem => item.IsSnack)
+            </dd>
+
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(modelItem => item.IsDinner)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(modelItem => item.IsDinner)
+            </dd>
+
+            <dt class="col-sm-2">
+                <!-- Sort by Discount (preserve filters) -->
+                <a asp-action="Index"
+                   asp-route-sortOrder="@ViewData["DiscountSort"]"
+                   asp-route-currentFilter='@ViewData["CurrentFilter"]'
+                   @*asp-route-categoryId='@ViewData["CurrentCategory"]'*@
+                   asp-route-pageNumber="1">
+                    Discount
+                </a>
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(modelItem => item.DiscountPer)
+            </dd>
+
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(modelItem => item.SellingPrice)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(modelItem => item.SellingPrice)
+            </dd>
+
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(modelItem => item.IsFastMoving)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(modelItem => item.IsFastMoving)
+            </dd>
+
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(modelItem => item.Category)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(modelItem => item.Category.CategoryDescritpion)
+            </dd>
+
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(modelItem => item.ItemType)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(modelItem => item.ItemType.ItemTypeName)
+            </dd>
+        </dl>
+
+        <a asp-action="Edit" asp-route-id="@item.ItemId">Edit |</a>
+        <a asp-action = "Details" asp-route-id = "@item.ItemId" > Details |</a> 
+        <a asp-action = "Delete" asp-route-id = "@item.ItemId" > Delete </a>
+    }
+</div>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @prevDisabled">
+    Previous
+</a>
+<span> @Model.PageIndex / @Model.TotalPages   </span>
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">
+    Next
+</a>

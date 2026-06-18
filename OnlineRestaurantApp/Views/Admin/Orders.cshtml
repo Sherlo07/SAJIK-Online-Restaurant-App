@@ -1,0 +1,182 @@
+﻿@model IEnumerable<OnlineRestaurantApp.Components.Order>
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Orders";
+    var current = (ViewBag.CurrentStatus as string ?? "All");
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var statusOptions = new List<SelectListItem>
+    {
+        new SelectListItem { Text = "All", Value = "All", Selected = string.Equals(current, "All", StringComparison.OrdinalIgnoreCase) },
+        new SelectListItem { Text = "Assigned", Value = "Assigned", Selected = string.Equals(current, "Assigned", StringComparison.OrdinalIgnoreCase) },
+        new SelectListItem { Text = "Not Assigned", Value = "Not Assigned", Selected = string.Equals(current, "Not Assigned", StringComparison.OrdinalIgnoreCase) },
+    };
+}
+
+<div class="d-flex align-items-center mb-3">
+    <h4 class="m-0">Orders</h4>
+    <div class="ms-auto">
+        <form method="get" asp-action="Orders" asp-controller="Admin" class="d-flex">
+            <select name="status" class="form-select form-select-sm me-2" asp-items="statusOptions" onchange="this.form.submit()"></select>
+            <noscript><button class="btn btn-primary btn-sm" type="submit">Filter</button></noscript>
+        </form>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Order #</th>
+                <th>User</th>
+                <th>Amount</th>
+                <th>Payment</th>
+                <th style="min-width:220px;">Items</th>
+                <th>Order Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var o in Model)
+            {
+                var d = o.Delivery;
+                var now = DateTime.Now;
+
+                // Determine visual status
+                bool isDelivered = d != null &&
+                (string.Equals(d.DeliveryStatus, "Delivered", StringComparison.OrdinalIgnoreCase)
+                || (d?.ExpectedOn != null && d.ExpectedOn <= now));
+
+                string statusClass, statusText;
+                if (isDelivered)
+                {
+                    statusClass = "badge bg-success";
+                    statusText = "Delivered";
+                }
+                else if (d == null)
+                {
+                    statusClass = "badge bg-warning text-dark";
+                    statusText = "Not Assigned";
+                }
+                else
+                {
+                    // Map in-flight statuses
+                    (statusClass, statusText) = d.DeliveryStatus switch
+                    {
+                        "OutForDelivery" => ("badge bg-warning text-dark", "OutForDelivery"),
+                        "InTransit" => ("badge bg-info text-dark", "InTransit"),
+                        "Assigned" => ("badge bg-primary", "Assigned"),
+                        _ => ("badge bg-secondary", d.DeliveryStatus ?? "Unknown")
+                    };
+                }
+
+                // Payment visual
+                bool paid = o.payment?.Status == true;
+                string payType = "-";
+                if (paid)
+                {
+                    // Map your IDs (adjust if you have a PaymentType lookup)
+                    payType = o.payment?.PaymentTypeId == 2 ? "Credit"
+                    : o.payment?.PaymentTypeId == 1 ? "Debit"
+                    : "-";
+                }
+
+                // Items preview
+                var items = o.orderDetailsItems ?? new List<OnlineRestaurantApp.Components.OrderItemDetails>();
+                var firstTwo = items.Take(2).Select(x => x.ItemName);
+                var more = Math.Max(0, items.Count - 2);
+                var modalId = $"items-{o.OrderId}";
+                <tr>
+                    <td>#@o.OrderId</td>
+                    <td>@o.user?.UserFirstName</td>
+                    <td>₹ @o.OrderAmount.ToString("0.00")</td>
+
+                    <td>
+                        @if (paid)
+                        {
+                            <span class="badge bg-success me-1">Paid</span>
+                            <span class="badge rounded-pill bg-light text-dark border">@payType</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Unpaid</span>
+                        }
+                    </td>
+
+                    <td>
+                        @if (items.Count == 0)
+                        {
+                            <span class="text-muted small">-</span>
+                        }
+                        else
+                        {
+                            <span class="small">@string.Join(", ", firstTwo)</span>
+                            @if (more > 0)
+                            {
+                                <span class="small text-muted"> +@more more</span>
+                            }
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-secondary ms-2"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#@modalId">
+                                View
+                            </button>
+
+                            <!-- Items Modal -->
+                            <div class="modal fade" id="@modalId" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-scrollable">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Order #@o.OrderId — Items</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body p-0">
+                                            <table class="table table-sm mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Item</th>
+                                                        <th class="text-end">Price</th>
+                                                        <th class="text-end">Qty</th>
+                                                        <th class="text-end">Amount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var it in items)
+                                                    {
+                                                        <tr>
+                                                            <td>@it.ItemName</td>
+                                                            <td class="text-end">₹@it.Price.ToString("0.00")</td>
+                                                            <td class="text-end">@it.Quantity</td>
+                                                            <td class="text-end">₹@it.ItemAmount.ToString("0.00")</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </td>
+
+                    <td>@o.OrderDate.ToString("dd-MMM-yyyy HH:mm")</td>
+
+                    <td>
+                        <span class="@statusClass">@statusText</span>
+                        @* Optional tiny hint *@
+                        @if (!isDelivered && d?.ExpectedOn != null)
+                        {
+                            <span class="small text-muted ms-1">
+                                (ETA: @d.ExpectedOn?.ToString("dd-MMM HH:mm"))
+                            </span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

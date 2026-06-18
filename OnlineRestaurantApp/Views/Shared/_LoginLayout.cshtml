@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SajikRestaurantApp</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/OnlineRestaurantApp.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Sajik Online Restaurant</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+
+                        
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        
+    </header>
+    <partial name="DisplaySlider" />
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+    <footer class="text-light mt-5"
+            style="background: linear-gradient(135deg, #0F2027, #203A43, #2C5364);">
+        <div class="container py-4">
+            <div class="row gy-4">
+
+                <!-- Brand -->
+                <div class="col-md-4">
+                    <h5 class="fw-bold mb-2">Sajik Restaurant</h5>
+                    <p class="small text-white-50 mb-0">
+
+                        Delicious food delivered with care. Browse categories, search dishes, and order easily.
+                    </p>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="col-6 col-md-2">
+                    <h6 class="fw-semibold mb-2">Quick Links</h6>
+                    <ul class="list-unstyled small mb-0">
+                        <li class="mb-1">
+                            <a class="text-decoration-none text-white-50 hover-footer"
+                               asp-controller="FoodItems" asp-action="Browse">
+
+                                Browse
+                            </a>
+                        </li>
+                        <li class="mb-1">
+                            <a class="text-decoration-none text-white-50 hover-footer"
+                               asp-controller="User" asp-action="Login">
+
+                                Login
+                            </a>
+                        </li>
+                        <li>
+                            <a class="text-decoration-none text-white-50 hover-footer"
+                               asp-controller="User" asp-action="Register">
+
+                                Register
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Categories (Dynamic Links - uses your categoriesForLayout + same routing) -->
+                <div class="col-6 col-md-3">
+                    <h6 class="fw-semibold mb-2">Categories</h6>
+                    <ul class="list-unstyled small mb-0">
+                        <li class="mb-1">
+                            <a class="text-decoration-none text-white-50 hover-footer"
+                               asp-controller="FoodItems" asp-action="Browse">
+
+                                Biryani
+                            </a>
+                        </li>
+                        <li class="mb-1">
+                            <a class="text-decoration-none text-white-50 hover-footer"
+                               asp-controller="FoodItems" asp-action="Browse">
+
+                                Breads
+                            </a>
+                        </li>
+                        <li class="mb-1">
+                            <a class="text-decoration-none text-white-50 hover-footer"
+                               asp-controller="FoodItems" asp-action="Browse">
+
+                                Breakfast
+                            </a>
+                        </li>
+                        <li class="mb-1">
+                            <a class="text-decoration-none text-white-50 hover-footer"
+                               asp-controller="FoodItems" asp-action="Browse">
+
+                                Curries
+                            </a>
+                        </li>
+                        <li class="mb-1">
+                            <a class="text-decoration-none text-white-50 hover-footer"
+                               asp-controller="FoodItems" asp-action="Browse">
+
+                                Desserts
+                            </a>
+                        </li>
+                        <li class="mb-1">
+                            <a class="text-decoration-none text-white-50 hover-footer"
+                               asp-controller="FoodItems" asp-action="Browse">
+
+                                Friedrice and Noodles
+                            </a>
+                        </li>
+                        <a class="text-decoration-none text-white hover-footer fw-semibold small"
+                           asp-controller="FoodItems" asp-action="Browse">
+
+                            View all →
+                        </a>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div class="col-md-3">
+                    <h6 class="fw-semibold mb-2">Contact</h6>
+                    <ul class="list-unstyled small text-white-50 mb-0">
+                        <li class="mb-1">Email: support@sajikrestaurant.com</li>
+                        <li class="mb-1">Phone: +91 98765 43210</li>
+                        <li>Location: Chennai, Tamil Nadu</li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <hr class="border-light opacity-25 my-4" />
+
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center small text-white-50">
+                <div>© @DateTime.UtcNow.Year - Sajik Restaurant. All rights reserved.</div>
+
+            </div>
+        </div>
+    </footer>
+    <style>
+
+        /* Small hover effect only for footer links */
+
+        .hover-footer:hover {
+            color: #ffffff !important;
+            text-decoration: underline !important;
+        }
+    </style>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

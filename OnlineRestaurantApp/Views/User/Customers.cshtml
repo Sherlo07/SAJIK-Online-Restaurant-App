@@ -1,0 +1,103 @@
+﻿@model IEnumerable<OnlineRestaurantApp.Components.User>
+@using System.Linq
+
+@{
+    ViewData["Title"] = "Customers";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var list = Model ?? Enumerable.Empty<OnlineRestaurantApp.Components.User>();
+    int i = 1;
+}
+
+<div class="container mt-4">
+
+    @if (TempData["Success"] is string s && !string.IsNullOrEmpty(s))
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @s
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Error"] is string e && !string.IsNullOrEmpty(e))
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @e
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Customers</h3>
+        <span class="text-muted small">Total: @list.Count()</span>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Mobile</th>
+                    <th>Created On</th>
+                    <th>Status</th>
+                    <th style="width:160px;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            @if (!list.Any())
+            {
+                <tr>
+                    <td colspan="7" class="text-center text-muted">No customers found.</td>
+                </tr>
+            }
+            else
+            {
+                foreach (var user in list)
+                {
+                    <tr>
+                        <td>@i</td>
+                        <td>@user.UserFirstName @user.UserLastName</td>
+                        <td>@user.Email</td>
+                        <td>@user.Mobile</td>
+                        <td>@user.CreatedOn.ToString("dd-MMM-yyyy")</td>
+                        <td>
+                            @if (user.Status)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Inactive</span>
+                            }
+                        </td>
+                        <td>
+                                   <form asp-action="ToggleCustomerStatus"
+                                      asp-controller="User"
+                                      method="post"
+                                      class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="userId" value="@user.UserId" />
+                                    @if (user.Status)
+                                    {
+                                        <button type="submit" class="btn btn-sm btn-danger"
+                                                onclick="return confirm('Disable this customer?');">
+                                            Disable
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="submit" class="btn btn-sm btn-success"
+                                                onclick="return confirm('Enable this customer?');">
+                                            Enable
+                                        </button>
+                                    }
+                                </form>
+                        </td>
+                    </tr>
+                    i++;
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
