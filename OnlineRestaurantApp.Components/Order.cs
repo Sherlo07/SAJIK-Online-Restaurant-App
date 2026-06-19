@@ -10,7 +10,7 @@ namespace OnlineRestaurantApp.Components
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int OrderId { get; set; }
         public int UserId { get; set; }
-        public DateTime OrderDate { get; set; } = DateTime.Now;
+        public DateTime OrderDate { get; set; } = DateTime.UtcNow;
         public decimal OrderAmount { get; set; }
         public bool IsAssigned { get; set; } = false;
 

@@ -41,7 +41,7 @@
             @foreach (var o in Model)
             {
                 var d = o.Delivery;
-                var now = DateTime.Now;
+                var now = DateTime.UtcNow;
 
                 // Determine visual status
                 bool isDelivered = d != null &&

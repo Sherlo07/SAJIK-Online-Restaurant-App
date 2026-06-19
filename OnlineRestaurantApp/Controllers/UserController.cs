@@ -328,7 +328,7 @@ namespace OnlineRestaurantApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult RegisterUser(User u)
         {
-            u.CreatedOn = DateTime.Now;
+            u.CreatedOn = DateTime.UtcNow;
             u.Status = true;
 
             if (!ModelState.IsValid)

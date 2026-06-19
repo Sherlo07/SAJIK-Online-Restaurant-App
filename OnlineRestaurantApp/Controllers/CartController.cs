@@ -248,7 +248,7 @@ namespace OnlineRestaurantApp.Controllers
                 var order = new Order
                 {
                     UserId = user.UserId,
-                    OrderDate = DateTime.Now,
+                    OrderDate = DateTime.UtcNow,
                     OrderAmount = 0m,
                     // Status = "PendingPayment"  // if you have this column
                 };
@@ -332,7 +332,7 @@ namespace OnlineRestaurantApp.Controllers
             // ----------------------------
             // Lazy-deliver if ExpectedOn <= now and status is still active
             // ----------------------------
-            var now = DateTime.Now; // keep local time consistent across the app
+            var now = DateTime.UtcNow; // keep local time consistent across the app
             var activeStatuses = new[] { "Assigned", "InTransit", "OutForDelivery" };
 
             if (order.Delivery != null &&

@@ -43,7 +43,7 @@ namespace OnlineRestaurantApp.Controllers
             if (!IsAdminLoggedIn())
                 return RedirectToAction("Login", "User");
 
-            var now = DateTime.Now;
+            var now = DateTime.UtcNow;
             var activeStatuses = new[] { "Assigned", "InTransit", "OutForDelivery" };
 
             // Include delivery, payment, and items so the view can render everything
@@ -101,7 +101,7 @@ namespace OnlineRestaurantApp.Controllers
             if (!IsAdminLoggedIn())
                 return RedirectToAction("Login", "User");
 
-            var now = DateTime.Now;  // local time
+            var now = DateTime.UtcNow;  // local time
 
             // Unassigned, paid orders
             var unassignedOrders = await _context.orders
@@ -197,7 +197,7 @@ namespace OnlineRestaurantApp.Controllers
                 }
 
                 // Ensure not busy RIGHT NOW (use same window rule as GET)
-                var now = DateTime.Now;
+                var now = DateTime.UtcNow;
                 var isBusy = await _context.Deliveries
                     .AnyAsync(d => d.EmployeeId == employee.EmployeeId
                                    && ActiveStatuses.Contains(d.DeliveryStatus)

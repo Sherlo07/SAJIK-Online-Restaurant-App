@@ -104,7 +104,7 @@ namespace OnlineRestaurantApp.Controllers
             // System fields
             feedback.Status = FbStatus.Open;
             feedback.RemarksByAdmin = string.Empty;
-            feedback.CreatedOn = DateTime.Now;
+            feedback.CreatedOn = DateTime.UtcNow;
 
             // Always associate to logged-in user (critical)
             feedback.Email = sessionEmail.Trim();

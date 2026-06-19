@@ -56,7 +56,7 @@ namespace OnlineRestaurantApp.Controllers
                 .ToListAsync();
 
             // Lazy-mark delivered if due
-            var now = DateTime.Now;
+            var now = DateTime.UtcNow;
             var activeStatuses = new[] { "Assigned", "InTransit", "OutForDelivery" };
             bool changed = false;
 

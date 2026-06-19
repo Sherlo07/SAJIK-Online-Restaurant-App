@@ -182,7 +182,7 @@ namespace OnlineRestaurantApp.Controllers
         //        return RedirectToAction("Start", new { orderId });
         //    }
 
-        //    if (!int.TryParse(expiryYear, out var yyyy) || yyyy < DateTime.Now.Year || yyyy > DateTime.Now.Year + 20)
+        //    if (!int.TryParse(expiryYear, out var yyyy) || yyyy < DateTime.UtcNow.Year || yyyy > DateTime.UtcNow.Year + 20)
         //    {
         //        TempData["Err"] = "Invalid expiry year.";
         //        return RedirectToAction("Start", new { orderId });
@@ -192,7 +192,7 @@ namespace OnlineRestaurantApp.Controllers
         //    {
         //        var lastDay = DateTime.DaysInMonth(yyyy, mm);
         //        var exp = new DateTime(yyyy, mm, lastDay, 23, 59, 59);
-        //        if (exp < DateTime.Now)
+        //        if (exp < DateTime.UtcNow)
         //        {
         //            TempData["Err"] = "Card is expired.";
         //            return RedirectToAction("Start", new { orderId });
@@ -255,7 +255,7 @@ namespace OnlineRestaurantApp.Controllers
         //                order = new Order
         //                {
         //                    UserId = user.UserId,
-        //                    OrderDate = DateTime.Now,
+        //                    OrderDate = DateTime.UtcNow,
         //                    OrderAmount = 0m,
         //                    orderDetailsItems = new List<OrderItemDetails>()
         //                };
@@ -362,7 +362,7 @@ namespace OnlineRestaurantApp.Controllers
         //            OrderId = order.OrderId,
         //            UserId = user.UserId,
         //            PaymentTypeId = paymentTypeId,
-        //            PaidOnDate = DateTime.Now,
+        //            PaidOnDate = DateTime.UtcNow,
         //            OrderAmount = order.OrderAmount,
         //            Status = true
         //        };
@@ -432,7 +432,7 @@ namespace OnlineRestaurantApp.Controllers
                 return RedirectToAction("Start", new { orderId });
             }
 
-            if (!int.TryParse(expiryYear, out var yyyy) || yyyy < DateTime.Now.Year || yyyy > DateTime.Now.Year + 20)
+            if (!int.TryParse(expiryYear, out var yyyy) || yyyy < DateTime.UtcNow.Year || yyyy > DateTime.UtcNow.Year + 20)
             {
                 TempData["Err"] = "Invalid expiry year.";
                 return RedirectToAction("Start", new { orderId });
@@ -442,7 +442,7 @@ namespace OnlineRestaurantApp.Controllers
             {
                 var lastDay = DateTime.DaysInMonth(yyyy, mm);
                 var exp = new DateTime(yyyy, mm, lastDay, 23, 59, 59);
-                if (exp < DateTime.Now)
+                if (exp < DateTime.UtcNow)
                 {
                     TempData["Err"] = "Card is expired.";
                     return RedirectToAction("Start", new { orderId });
@@ -528,7 +528,7 @@ namespace OnlineRestaurantApp.Controllers
                         order = new Order
                         {
                             UserId = user.UserId,
-                            OrderDate = DateTime.Now,
+                            OrderDate = DateTime.UtcNow,
                             OrderAmount = 0m,
                             IsAssigned = false, // <-- explicit on creation
                             orderDetailsItems = new List<OrderItemDetails>()
@@ -656,7 +656,7 @@ namespace OnlineRestaurantApp.Controllers
                     OrderId = order.OrderId,
                     UserId = user.UserId,
                     PaymentTypeId = paymentTypeId,
-                    PaidOnDate = DateTime.Now,
+                    PaidOnDate = DateTime.UtcNow,
                     OrderAmount = order.OrderAmount,
                     Status = true
                 };
@@ -721,7 +721,7 @@ namespace OnlineRestaurantApp.Controllers
             ViewBag.Paid = isPaid;
 
             // For delivery status helpers (only meaningful if paid)
-            var now = DateTime.Now;
+            var now = DateTime.UtcNow;
             var activeStatuses = new[] { "Assigned", "InTransit", "OutForDelivery" };
 
             if (isPaid && order.Delivery != null &&
@@ -883,7 +883,7 @@ namespace OnlineRestaurantApp.Controllers
                 throw new Exception("No delivery partners available right now.");
 
             // 4) Time calculation (LOCAL time consistently)
-            var now = DateTime.Now;
+            var now = DateTime.UtcNow;
             var expected = order.OrderDate.AddMinutes(30);
 
             // Optional: if the 30-min window is already past, provide a small grace buffer

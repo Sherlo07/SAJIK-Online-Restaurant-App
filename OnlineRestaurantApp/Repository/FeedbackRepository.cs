@@ -75,7 +75,7 @@ namespace OnlineRestaurantApp.Repository
             // Created range
             if (!string.IsNullOrWhiteSpace(createdRange))
             {
-                var now = DateTime.Now;
+                var now = DateTime.UtcNow;
                 DateTime start;
                 switch (createdRange)
                 {
