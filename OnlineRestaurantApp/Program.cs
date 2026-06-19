@@ -21,6 +21,8 @@ namespace OnlineRestaurantApp
             {
                 options.UseNpgsql(builder.Configuration.GetConnectionString("cs"));
             });
+
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
             builder.Services.AddSession();
             builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 
