@@ -340,7 +340,7 @@ namespace OnlineRestaurantApp.Controllers
 
                 if (_context.users.Any(user => user.Email.ToLower() == email))
                 {
-                    ModelState.AddModelError("UserId", "This Username is already taken.");
+                    ModelState.AddModelError("Email", "This email is already registered.");
                     return View("Register", u);
                 }
 
@@ -348,15 +348,18 @@ namespace OnlineRestaurantApp.Controllers
                 Role? defaultRole = _context.roles.FirstOrDefault(r => r.RoleName == "Customer");
                 u.RoleId = defaultRole?.RoleId ?? 2;
 
+                // Fix: explicitly set UserId to 0 so PostgreSQL generates it
+                u.UserId = 0;
+
                 _context.users.Add(u);
                 _context.SaveChanges();
 
-                TempData["SuccessMessage"] = "Registration successful! Please login with your new credentials.";
+                TempData["SuccessMessage"] = "Registration successful! Please login.";
                 return RedirectToAction("Login");
             }
-            catch
+            catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, "An unexpected error occurred during registration.");
+                ModelState.AddModelError(string.Empty, ex.InnerException?.Message ?? ex.Message);
                 return View("Register", u);
             }
         }
