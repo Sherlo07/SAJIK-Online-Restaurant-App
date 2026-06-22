@@ -1,3 +1,4 @@
+https://sajik-online-restaurant-application.onrender.com
 # 🍽️ Sajik Online Restaurant App
 
 Sajik Online Restaurant App is a full-stack web application developed using ASP.NET Core MVC, Entity Framework Core, and SQL Server. The application is designed to provide a seamless online food ordering experience for customers while offering powerful management capabilities for administrators.
